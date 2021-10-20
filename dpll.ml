@@ -39,8 +39,61 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
    applique la simplification de l'ensemble des clauses en mettant
    le littéral i à vrai *)
 let simplifie i clauses =
-  (* à compléter *)
-  []
+	let rec filter_clause clause ret =
+		match clause with
+		| [] -> ret
+		| lit :: tail ->
+			if lit = (i * -1) then
+				filter_clause tail ret
+			else
+				filter_clause tail (lit::ret)
+	in
+	let rec filter_cnf clauses ret =
+		match clauses with
+		| [] -> ret
+		| c :: tail ->
+			if List.mem i c then
+				filter_cnf tail ret
+			else if List.mem (i * -1) c then
+				filter_cnf tail ((filter_clause c [])::ret)
+			else
+				filter_cnf tail (c::ret)
+	in
+	filter_cnf clauses []
+;; 
+
+(*	let filter_neg x =
+		if x = (i * -1) then
+			None
+		else
+			Some x
+	in
+	let i_negless_clauses = List.map (List.filter_map filter_neg) clauses in
+	let rec filter clauses ret =
+		match clauses with
+		| [] -> ret
+		| c :: tail ->
+			if List.mem i c then
+				filter tail ret
+			else
+				filter tail (c::ret)
+	in
+	filter i_negless_clauses []
+;; Works! inverses list and simplifies the function*)
+		 
+
+(* let rec filter ret clause =
+    match clause with
+    | [] -> ret
+    | lit :: tail -> 
+      if lit = i then
+       []
+      else if lit = (i * -1) then
+       filter ret tail 
+      else
+       filter (lit::ret) tail        
+ 		in
+		List.map (filter []);; works but gives out empty clauses, shit. *) 
 
 (* solveur_split : int list list -> int list -> int list option
    exemple d'utilisation de `simplifie' *)
