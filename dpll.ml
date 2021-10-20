@@ -38,7 +38,8 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
 (* simplifie : int -> int list list -> int list list 
    applique la simplification de l'ensemble des clauses en mettant
    le littéral i à vrai *)
-let simplifie i clauses =
+
+(*let simplifie i clauses =
 	let rec filter_clause clause ret =
 		match clause with
 		| [] -> ret
@@ -60,15 +61,15 @@ let simplifie i clauses =
 				filter_cnf tail (c::ret)
 	in
 	filter_cnf clauses []
-;; 
+;;*) 
 
-(*	let filter_neg x =
+let simplifie i clauses =
+	let filter_neg x =
 		if x = (i * -1) then
 			None
 		else
 			Some x
 	in
-	let i_negless_clauses = List.map (List.filter_map filter_neg) clauses in
 	let rec filter clauses ret =
 		match clauses with
 		| [] -> ret
@@ -78,8 +79,9 @@ let simplifie i clauses =
 			else
 				filter tail (c::ret)
 	in
+	let i_negless_clauses = List.map (List.filter_map filter_neg) clauses in
 	filter i_negless_clauses []
-;; Works! inverses list and simplifies the function*)
+;;
 		 
 
 (* let rec filter ret clause =

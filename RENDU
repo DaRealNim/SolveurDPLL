@@ -8,9 +8,9 @@ Date limite: 29 octobre 2021, 23h59
 
 Identité
 --------
-Nombre de binôme: **à remplir**
-Nom, prénom 1: **à remplir**
-Nom, prénom 2: **à remplir**
+Nombre de binôme: 64
+Nom, prénom 1: Teixeira Medeiros, Claudio
+Nom, prénom 2: Maudet, Benjamin
 
 
 Questions sur votre code
@@ -30,7 +30,70 @@ Questions sur votre code
    - Si non, expliquez en quelques phrases en français comment
      fonctionne votre implémentation de `simplifie`.
 
-**à remplir**
+Nous avons implementé les deux, mais nous gardons la fonction qui utilise
+filter_map, car elle est plus courte et donc plus lisible.
+
+De façon générale:
+
+simplifie(phi, a)
+	1 - Enlever !a des clauses dans phi.
+	2 - Enlever clauses dans phi où a est positif.
+	3 - Retourner phi
+
+De façon spécifique:
+
+Premier cas (sans filter_map):
+
+1 - On définit:
+filter_clause clause ret
+	Une fonction récursive terminale qui enlève chaque litéral de "clause",
+
+	s'il est différent de !a, filter_clause le rajoute dans "ret". 
+	Quand "clause" est vide, filter_clause renvoie ret.
+
+2 - On définit:
+filter_cnf clauses ret
+	Une fonction récursive terminale qui enlève chaque clause de "clauses". 
+	
+	Si elle ne contient pas "a", filter_cnf la rajoute dans "ret", si elle 
+	contient "!a", filter_cnf appelle "filter_clause" et rajoute son 
+	résultat dans "ret". Quand "clauses" est vide, filter_cnf renvoie ret.
+	
+	
+3- On appelle
+	"filter_cnf phi []" pour obtenir CNF phi simplifiée et on la retourne.
+
+
+Deuxième cas (filter_map):
+
+1- On définit:
+
+filter_neg x
+	Une fonction qui renvoie None si "x" est égal à !a et "(Some x)" 
+	autrement.
+
+2.a- On définit,
+
+i_negless_clauses
+	Une formule phi sans !a. 
+
+2.b- En appelant: 
+	List.map qui applique à chaque clause de la formule 
+	List.filter_map, qui à son tour applique à chaque litéral de la clause
+	filter_neg pour renvoyer une liste contenant tous les éléments x.
+	
+	List.map renvoie ensuite la formule phi sans !a "i_negless_clauses".
+
+3- On définit:
+
+filter clauses ret
+	Une fonction récursive terminale qui rajoute les clauses ne contenant
+	pas a dans "ret" et qui renvoie "ret".
+
+4- On appelle:
+
+"filter phi []"
+	Pour obtenir la formule CNF phi simplifiée et on la retourne.
 
 ---
 
