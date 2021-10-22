@@ -125,7 +125,6 @@ let rec solveur_split clauses interpretation =
     - sinon, lève une exception `Not_found' *)
 let rec unitaire clauses =
     (* à compléter *)
-    (* 0 *)
     match clauses with
     | [] -> failwith "Not_found";
     | x::xs -> if (List.length x) = 1
@@ -143,9 +142,28 @@ let rec unitaire clauses =
     - si `clauses' contient au moins un littéral pur, retourne
       ce littéral ;
     - sinon, lève une exception `Failure "pas de littéral pur"' *)
+type result =
+    | Nil
+    | Res of int
+
 let pur clauses =
-    (* à compléter *)
-    0
+    let rec aux remaining =
+        let rec checkClause clause =
+            match clause with
+                | [] -> Nil
+                | y::ys -> let res = List.map (List.find_opt (fun x -> x = -y)) clauses
+                    in let found = List.find_opt (fun x -> x != None) res
+                    in if found != None then (checkClause ys) else Res(y)
+        in
+        match remaining with
+        | [] -> failwith "pas de littéral pur"
+        | x::xs -> match (checkClause x) with
+            | Nil -> (aux xs)
+            | Res(a) -> a
+    in
+    aux clauses
+;;
+
 
     (* solveur_dpll_rec : int list list -> int list -> int list option *)
 let rec solveur_dpll_rec clauses interpretation =
