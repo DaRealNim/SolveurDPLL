@@ -123,9 +123,21 @@ let rec solveur_split clauses interpretation =
     - si `clauses' contient au moins une clause unitaire, retourne
       le littéral de cette clause unitaire ;
     - sinon, lève une exception `Not_found' *)
-let unitaire clauses =
+let rec unitaire clauses =
     (* à compléter *)
-    0
+    (* 0 *)
+    match clauses with
+    | [] -> failwith "Not_found";
+    | x::xs -> if (List.length x) = 1
+        then
+            match x with
+            | x::[] -> x
+            | _ -> assert(false)
+        else
+            unitaire xs
+;;
+
+
 
     (* pur : int list list -> int
     - si `clauses' contient au moins un littéral pur, retourne
