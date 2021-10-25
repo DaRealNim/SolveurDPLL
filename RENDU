@@ -24,76 +24,76 @@ Questions sur votre code
 ---
 
 1. Avez-vous utilisé la fonction `filter_map` (donné dans dpll.ml)
-   dans votre implémentation de `simplifie` ? 
+   dans votre implémentation de `simplifie` ?
    - Si oui, expliquez en quelques phrases en français comment vous
      l'avez utilisée.
    - Si non, expliquez en quelques phrases en français comment
      fonctionne votre implémentation de `simplifie`.
 
-Nous avons implementé les deux, mais nous gardons la fonction qui utilise
-filter_map, car elle est plus courte et donc plus lisible.
+        Nous avons implementé les deux, mais nous gardons la fonction qui utilise
+        filter_map, car elle est plus courte et donc plus lisible.
 
-De façon générale:
+        De façon générale:
 
-simplifie(phi, a)
-	1 - Enlever !a des clauses dans phi.
-	2 - Enlever clauses dans phi où a est positif.
-	3 - Retourner phi
+        simplifie(phi, a)
+        	1 - Enlever !a des clauses dans phi.
+        	2 - Enlever clauses dans phi où a est positif.
+        	3 - Retourner phi
 
-De façon spécifique:
+        De façon spécifique:
 
-Premier cas (sans filter_map):
+        Premier cas (sans filter_map):
 
-1 - On définit:
-filter_clause clause ret
-	Une fonction récursive terminale qui enlève chaque litéral de "clause",
+        1 - On définit:
+        filter_clause clause ret
+        	Une fonction récursive terminale qui enlève chaque litéral de "clause",
 
-	s'il est différent de !a, filter_clause le rajoute dans "ret". 
-	Quand "clause" est vide, filter_clause renvoie ret.
+        	s'il est différent de !a, filter_clause le rajoute dans "ret".
+        	Quand "clause" est vide, filter_clause renvoie ret.
 
-2 - On définit:
-filter_cnf clauses ret
-	Une fonction récursive terminale qui enlève chaque clause de "clauses". 
-	
-	Si elle ne contient pas "a", filter_cnf la rajoute dans "ret", si elle 
-	contient "!a", filter_cnf appelle "filter_clause" et rajoute son 
-	résultat dans "ret". Quand "clauses" est vide, filter_cnf renvoie ret.
-	
-	
-3- On appelle
-	"filter_cnf phi []" pour obtenir CNF phi simplifiée et on la retourne.
+        2 - On définit:
+        filter_cnf clauses ret
+        	Une fonction récursive terminale qui enlève chaque clause de "clauses".
+
+        	Si elle ne contient pas "a", filter_cnf la rajoute dans "ret", si elle
+        	contient "!a", filter_cnf appelle "filter_clause" et rajoute son
+        	résultat dans "ret". Quand "clauses" est vide, filter_cnf renvoie ret.
 
 
-Deuxième cas (filter_map):
+        3- On appelle
+        	"filter_cnf phi []" pour obtenir CNF phi simplifiée et on la retourne.
 
-1- On définit:
 
-filter_neg x
-	Une fonction qui renvoie None si "x" est égal à !a et "(Some x)" 
-	autrement.
+        Deuxième cas (filter_map):
 
-2.a- On définit,
+        1- On définit:
 
-i_negless_clauses
-	Une formule phi sans !a. 
+        filter_neg x
+        	Une fonction qui renvoie None si "x" est égal à !a et "(Some x)"
+        	autrement.
 
-2.b- En appelant: 
-	List.map qui applique à chaque clause de la formule 
-	List.filter_map, qui à son tour applique à chaque litéral de la clause
-	filter_neg pour renvoyer une liste contenant tous les éléments x.
-	
-	List.map renvoie ensuite la formule phi sans !a "i_negless_clauses".
+        2.a- On définit,
 
-3- On définit:
+        i_negless_clauses
+        	Une formule phi sans !a.
 
-filter clauses ret
-	Une fonction récursive terminale qui rajoute les clauses ne contenant
-	pas a dans "ret" et qui renvoie "ret".
+        2.b- En appelant:
+        	List.map qui applique à chaque clause de la formule
+        	List.filter_map, qui à son tour applique à chaque litéral de la clause
+        	filter_neg pour renvoyer une liste contenant tous les éléments x.
 
-4- On appelle:
+        	List.map renvoie ensuite la formule phi sans !a "i_negless_clauses".
 
-"filter phi []"
-	Pour obtenir la formule CNF phi simplifiée et on la retourne.
+        3- On définit:
+
+        filter clauses ret
+        	Une fonction récursive terminale qui rajoute les clauses ne contenant
+        	pas a dans "ret" et qui renvoie "ret".
+
+        4- On appelle:
+
+        "filter phi []"
+        	Pour obtenir la formule CNF phi simplifiée et on la retourne.
 
 ---
 
@@ -106,7 +106,10 @@ filter clauses ret
    comment ces fonctions auxiliaires sont utilisées dans votre
    implémentation de la fonction `unitaire`.
 
-**à remplir**
+        Nous avons simplement utilisé la fonction auxiliaire List.length, qui nous
+        sert à vérifier si une clause donnée ne contient bien qu'un seul littéral.
+        "Pour chaque clause, si la longueur de la liste est 1, retourner le premier
+        élément".
 
 ---
 
@@ -115,7 +118,40 @@ filter clauses ret
    quelques phrases en français comment ces fonctions auxiliaires sont
    utilisées dans votre implémentation de la fonction `pur`.
 
-**à remplir**
+        Premièrement, nous avons défini une fonction auxiliaire principale "aux".
+        Elle prend également une formule en argument, mais nous permet de
+        l'appeler recursivement en retirant les clauses déjà traitées, tout en
+        conservant la formule originale (paramètre de "pur").
+
+        Nous avons ensuite une fonction auxiliaire recursive checkClause, qui permet
+        de vérifier l'existence d'un litteral pur dans la formule originale, mais
+        en testant les littéraux d'une clause spécifique. Il suffit donc d'appeler
+        checkClause sur chaque clause de la formule jusqu'a trouver un pur
+        (ou pas, dans ce cas lever une exception).
+
+        Deux fonctions auxiliaires de la librairie List ont été utilisées
+        dans checkClause, List.map et List.find_opt, de la manière suivante pour
+        chaque littéral de la clause:
+            - Premièrement, un chainage de List.map et de List.find_opt sur la
+              formule originale. L'idée est de construire une liste de résultats
+              pour chaque clause indiquant si l'opposé du littéral testé est
+              présent dans une clause donnée.
+              On utilise donc List.find_opt auquel on passe le prédicat
+              (fun x -> x = -y), avec y le littéral testé, qui va retourner
+              None si le littéral opposé n'est pas trouvé dans la clause.
+              On passe le tout à List.map, qui va l'executer sur la formule
+              originale. Le résultat sera donc une liste d'options, qui seront
+              soit None si le littéral opposé n'a pas été trouvé dans la clause,
+              soit le littéral opposé correspondant.
+
+            - Une fois cette liste de résultat obtenu, on réutilise List.find_opt
+              dessus, pour trouver un élément qui n'est PAS None. Si la liste
+              contient un élément qui n'est PAS None, alors le littéral opposé
+              à été trouvé. Il faut donc tester le littéral suivant.
+              Si tout les éléments de la liste sont None, alors le littéral opposé
+              n'a pas été trouvé. Le littéral est donc pur. On peut le retourner,
+              ce qui aura pour effet de terminer la fonction pur en renvoyant ce
+              littéral.
 
 ---
 
