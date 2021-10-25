@@ -142,24 +142,38 @@ let rec unitaire clauses =
     - si `clauses' contient au moins un littéral pur, retourne
       ce littéral ;
     - sinon, lève une exception `Failure "pas de littéral pur"' *)
-type result =
-    | Nil
-    | Res of int
-
 let pur clauses =
     let rec aux remaining =
+        (*tests if a specific clause contains a pure litteral*)
         let rec checkClause clause =
+            (*for each litteral in the clause*)
             match clause with
-                | [] -> Nil
+                (*if no litteral left, then no pure. return nothing*)
+                | [] -> None
+                (*go through all the clauses of the formula again.
+                  build a list containing either "None" if the clause DOESN'T contain
+                  the opposite of the litteral we're testing (so it could be pure)
+                  or the faulting litteral if it exists
+                  so if we're testing litteral 3 in formula [[1; 2; 3]; [2; 3]; [-3; 4; 5]]
+                  we would get [None; None; -3]
+                  all we have to do next is check if the list is full of None. If one of the
+                  element isn't None, then it isn't pure, and we test the next litteral.
+                  If all the elements are None, then the litteral is pure, return it.
+              *)
                 | y::ys -> let res = List.map (List.find_opt (fun x -> x = -y)) clauses
                     in let found = List.find_opt (fun x -> x != None) res
-                    in if found != None then (checkClause ys) else Res(y)
+                    in if found != None then (checkClause ys) else (Some y)
         in
+        (*for each remaining clauses*)
         match remaining with
         | [] -> failwith "pas de littéral pur"
+        (*call checkclause on the clause*)
         | x::xs -> match (checkClause x) with
-            | Nil -> (aux xs)
-            | Res(a) -> a
+            (*if checkclause returns nothing then no pure litteral was found in this clause,
+            so we continue with the next one*)
+            | None -> (aux xs)
+            (*else, then a pure litteral was found, return it*)
+            | Some y -> y
     in
     aux clauses
 ;;
