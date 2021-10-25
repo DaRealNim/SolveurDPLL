@@ -181,8 +181,18 @@ let pur clauses =
 
     (* solveur_dpll_rec : int list list -> int list -> int list option *)
 let rec solveur_dpll_rec clauses interpretation =
-    (* à compléter *)
-    None
+		match clauses with
+		| [] -> Some interpretation
+		| c :: tail ->
+			try 
+				solveur_dpll_rec (unitaire clauses) interpretation
+			with "Not_found"
+				try
+					solveur_dpll_rec (pur clauses) interpretation
+				with "pas de littéral pur"
+					let x = List.hd c
+					solveur_dpll_rec (simplifie x clauses) x::interpretation 
+				
 
     (* tests *)
     (* let () = print_modele (solveur_dpll_rec systeme []) *)
