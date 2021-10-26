@@ -35,6 +35,9 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
 
 (********************************************************************)
 
+exception No_unit_clause of string;;
+exception No_pure_lit of string;;
+
 (* simplifie : int -> int list list -> int list list
    applique la simplification de l'ensemble des clauses en mettant
    le littéral i à vrai *)
@@ -126,7 +129,7 @@ let rec solveur_split clauses interpretation =
 let rec unitaire clauses =
     (* à compléter *)
     match clauses with
-    | [] -> failwith "Not_found";
+    | [] -> raise(No_unit_clause "Pas de clause unitaire")
     | x::xs -> if (List.length x) = 1
         then
             match x with
@@ -166,7 +169,7 @@ let pur clauses =
         in
         (*for each remaining clauses*)
         match remaining with
-        | [] -> failwith "pas de littéral pur"
+        | [] -> raise(No_pure_lit "Pas de littéral pur")
         (*call checkclause on the clause*)
         | x::xs -> match (checkClause x) with
             (*if checkclause returns nothing then no pure litteral was found in this clause,
@@ -185,13 +188,15 @@ let rec solveur_dpll_rec clauses interpretation =
 		| [] -> Some interpretation
 		| c :: tail ->
 			try 
-				solveur_dpll_rec (unitaire clauses) interpretation
-			with "Not_found"
-				try
-					solveur_dpll_rec (pur clauses) interpretation
-				with "pas de littéral pur"
-					let x = List.hd c
-					solveur_dpll_rec (simplifie x clauses) x::interpretation 
+                let u = unitaire clauses in
+				solveur_dpll_rec (simplifie u clauses) interpretation
+			with No_unit_clause "Pas de clause unitaire" ->
+                try
+                    let p = pur clauses in
+					solveur_dpll_rec (simplifie p clauses) interpretation
+				with No_pure_lit "Pas de littéral pur" ->
+					let x = List.hd c in 
+					solveur_dpll_rec (simplifie x clauses) (x::interpretation) 
 				
 
     (* tests *)
