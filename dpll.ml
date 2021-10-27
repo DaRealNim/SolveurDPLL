@@ -187,28 +187,30 @@ let rec solveur_dpll_rec clauses interpretation =
 		match clauses with
 		| [] -> Some interpretation
 		| c :: tail ->
-			try
-                let u = unitaire clauses in
-				solveur_dpll_rec (simplifie u clauses) (u::interpretation)
-			with No_unit_clause "Pas de clause unitaire" ->
-                try
-                    let p = pur clauses in
-					solveur_dpll_rec (simplifie p clauses) (p::interpretation)
-				with No_pure_lit "Pas de littéral pur" ->
+            if c = [] then None
+            else
+    			try
+                    let u = unitaire clauses in
+    				solveur_dpll_rec (simplifie u clauses) (u::interpretation)
+    			with No_unit_clause "Pas de clause unitaire" ->
                     try
-                        (* On peut reprendre le code de solveur split, puisque celui ci sert a bifurquer sur
-                        deux branches avec une interpretation du littéral vraie et une fausse, ce qui est
-                        précisement ce qu'on doit faire à ce point de l'algorithme dpll*)
-                        let l = hd c in
-                        let branche = solveur_dpll_rec (simplifie l clauses) (l::interpretation) in
-                        match branche with
-                        | None -> solveur_dpll_rec (simplifie (-l) clauses) ((-l)::interpretation)
-                        | _    -> branche
-                    with Failure _ -> None
-                    (* try *)
-    					(* let x = List.hd c in
-    					solveur_dpll_rec (simplifie x clauses) (x::interpretation) *)
-                    (* with Failure "hd" -> solveur_dpll_rec tail interpretation *)
+                        let p = pur clauses in
+    					solveur_dpll_rec (simplifie p clauses) (p::interpretation)
+    				with No_pure_lit "Pas de littéral pur" ->
+                        try
+                            (* On peut reprendre le code de solveur split, puisque celui ci sert a bifurquer sur
+                            deux branches avec une interpretation du littéral vraie et une fausse, ce qui est
+                            précisement ce qu'on doit faire à ce point de l'algorithme dpll*)
+                            let l = hd c in
+                            let branche = solveur_dpll_rec (simplifie l clauses) (l::interpretation) in
+                            match branche with
+                            | None -> solveur_dpll_rec (simplifie (-l) clauses) ((-l)::interpretation)
+                            | _    -> branche
+                        with Failure _ -> None
+                        (* try *)
+        					(* let x = List.hd c in
+        					solveur_dpll_rec (simplifie x clauses) (x::interpretation) *)
+                        (* with Failure "hd" -> solveur_dpll_rec tail interpretation *)
 ;;
 
 
