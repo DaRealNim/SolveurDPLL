@@ -145,7 +145,7 @@ let rec unitaire clauses =
     - si `clauses' contient au moins un littéral pur, retourne
       ce littéral ;
     - sinon, lève une exception `Failure "pas de littéral pur"' *)
-let pur clauses =
+(* let pur_stupid clauses =
     let rec aux remaining =
         (*tests if a specific clause contains a pure litteral*)
         let rec checkClause clause =
@@ -179,8 +179,25 @@ let pur clauses =
             | Some y -> y
     in
     aux clauses
-;;
+;; *)
 
+
+let pur clauses =
+    let rec aux litterals orig =
+        match litterals with
+        | [] -> raise(No_pure_lit "Pas de littéral pur")
+        | x::xs ->
+            try
+                let _ = List.find (fun el -> el = -x) orig
+                in
+                aux xs orig
+            with Not_found ->
+                x
+    in
+    let litt = (List.flatten clauses);
+    in
+    aux litt litt
+;;
 
     (* solveur_dpll_rec : int list list -> int list -> int list option *)
 let rec solveur_dpll_rec clauses interpretation =
