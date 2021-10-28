@@ -48,7 +48,7 @@ Questions sur votre code
         filter_clause clause ret
         	Une fonction récursive terminale qui enlève chaque litéral de "clause",
 
-        	s'il est différent de !a, filter_clause le rajoute dans "ret".
+        	Si le litéral est différent de !a, filter_clause le rajoute dans "ret".
         	Quand "clause" est vide, filter_clause renvoie ret.
 
         2 - On définit:
@@ -122,10 +122,10 @@ Questions sur votre code
         une fonction aux écrite nous même.
         Le déroulement de l'algorithme est simple: la liste de liste représentant
         la formule est applatie avec List.flatten en une liste simple contenant
-        tout les littéraux de toute les clauses. Cette liste simple est ensuite
+        tous les littéraux de toute les clauses. Cette liste simple est ensuite
         passée à aux, qui va pour chaque littéral utiliser
-        List.find pour vérifier l'existence de son opposé dans la liste. Si il
-        exite alors le littéral n'est pas pur et le traitement continu. Si il
+        List.find pour vérifier l'existence de son opposé dans la liste. S'il
+        existe, alors le littéral n'est pas pur et le traitement continue. S'il
         n'existe pas alors il est pur, et on le renvoie.
 
 ---
@@ -134,10 +134,10 @@ Questions sur votre code
    `solveur_split` et `solveur_dpll_rec` ont un comportement
    différent, et expliquez les différences entre ces deux fonctions.
 
-        Un exemple ou solveur_split et solveur_dpll_rec ont un comportement
-        est le coloriage défini dans dpll.ml.
-        Bien que les interprétations retournées sont équivalentes une fois triées,
-        si on observe la liste brute sorties par chacune des fonctions, on remarque
+        Un exemple où solveur_split et solveur_dpll_rec ont un comportement
+        différent est le "coloriage" défini dans dpll.ml.
+        Bien que les interprétations retournées soient équivalentes une fois triées,
+        si on observe les listes brutes renvoyées par chacune des fonctions, on remarque
         qu'elles ne sont pas égales:
 
         # solveur_dpll_rec coloriage [];;
@@ -154,19 +154,19 @@ Questions sur votre code
             5; -4; 1]))
 
 
-        (pour le bien de cet exemple, la sortie de la fonction simplifie a été
-        remis a l'endroit afin d'avoir un affichage plus lisible)
+        (pour le bien de cet exemple, la sortie de la fonction "simplifie" a été
+        remise à l'endroit afin d'avoir un affichage plus lisible)
 
         En effet, ces deux fonctions sont des solveurs SAT, mais ont un comportement
-        différent: solveur_split parcours TOUTES les branches de l'arbre des
+        différent: "solveur_split" parcourt TOUTES les branches de l'arbre de
         possibilités afin de trouver une interpretation valide, tandis que
         solveur_dpll_rec "coupe" des branches de l'arbre en simplifiant des
-        cas faciles a traiter. Par conséquent, le parcours dans l'arbre réalisé
+        cas faciles à traiter. Par conséquent, le parcours dans l'arbre réalisé
         par ces deux fonctions est différent.
 
         Et bien évidemment, solveur_dpll_rec est infiniment plus rapide que
         solveur_split. Pour tester, nous avons lancé les deux fonctions sur
-        ii8a2.cnf et chronometré l'execution.
+        ii8a2.cnf et chronometré l'exécution.
         solveur_dpll_rec résoud le problème en 0,429s. Pour ce qui
         est de solveur_split... nous avons interrompu le processus après 12
         minutes pour ne pas perdre trop de temps.
