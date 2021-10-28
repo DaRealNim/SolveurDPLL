@@ -118,40 +118,15 @@ Questions sur votre code
    quelques phrases en français comment ces fonctions auxiliaires sont
    utilisées dans votre implémentation de la fonction `pur`.
 
-        Premièrement, nous avons défini une fonction auxiliaire principale "aux".
-        Elle prend également une formule en argument, mais nous permet de
-        l'appeler recursivement en retirant les clauses déjà traitées, tout en
-        conservant la formule originale (paramètre de "pur").
-
-        Nous avons ensuite une fonction auxiliaire recursive checkClause, qui permet
-        de vérifier l'existence d'un litteral pur dans la formule originale, mais
-        en testant les littéraux d'une clause spécifique. Il suffit donc d'appeler
-        checkClause sur chaque clause de la formule jusqu'a trouver un pur
-        (ou pas, dans ce cas lever une exception).
-
-        Deux fonctions auxiliaires de la librairie List ont été utilisées
-        dans checkClause, List.map et List.find_opt, de la manière suivante pour
-        chaque littéral de la clause:
-            - Premièrement, un chainage de List.map et de List.find_opt sur la
-              formule originale. L'idée est de construire une liste de résultats
-              pour chaque clause indiquant si l'opposé du littéral testé est
-              présent dans une clause donnée.
-              On utilise donc List.find_opt auquel on passe le prédicat
-              (fun x -> x = -y), avec y le littéral testé, qui va retourner
-              None si le littéral opposé n'est pas trouvé dans la clause.
-              On passe le tout à List.map, qui va l'executer sur la formule
-              originale. Le résultat sera donc une liste d'options, qui seront
-              soit None si le littéral opposé n'a pas été trouvé dans la clause,
-              soit le littéral opposé correspondant.
-
-            - Une fois cette liste de résultat obtenu, on réutilise List.find_opt
-              dessus, pour trouver un élément qui n'est PAS None. Si la liste
-              contient un élément qui n'est PAS None, alors le littéral opposé
-              à été trouvé. Il faut donc tester le littéral suivant.
-              Si tout les éléments de la liste sont None, alors le littéral opposé
-              n'a pas été trouvé. Le littéral est donc pur. On peut le retourner,
-              ce qui aura pour effet de terminer la fonction pur en renvoyant ce
-              littéral.
+        Nous avons utilisé les fonctions auxiliaires List.flatten, List.find et
+        une fonction aux écrite nous même.
+        Le déroulement de l'algorithme est simple: la liste de liste représentant
+        la formule est applatie avec List.flatten en une liste simple contenant
+        tout les littéraux de toute les clauses. Cette liste simple est ensuite
+        passée à aux, qui va pour chaque littéral utiliser
+        List.find pour vérifier l'existence de son opposé dans la liste. Si il
+        exite alors le littéral n'est pas pur et le traitement continu. Si il
+        n'existe pas alors il est pur, et on le renvoie.
 
 ---
 
@@ -159,7 +134,42 @@ Questions sur votre code
    `solveur_split` et `solveur_dpll_rec` ont un comportement
    différent, et expliquez les différences entre ces deux fonctions.
 
-**à remplir**
+        Un exemple ou solveur_split et solveur_dpll_rec ont un comportement
+        est le coloriage défini dans dpll.ml.
+        Bien que les interprétations retournées sont équivalentes une fois triées,
+        si on observe la liste brute sorties par chacune des fonctions, on remarque
+        qu'elles ne sont pas égales:
+
+        # solveur_dpll_rec coloriage [];;
+        - : int List.t option =
+        Some
+         ((::) (-21,
+           [-20; 19; 16; -17; 14; -13; -18; -15; 10; -12; -11; 9; -8; -6; 5; -7; -4;
+            -3; -2; 1]))
+        # solveur_split coloriage [];;
+        - : int List.t option =
+        Some
+         ((::) (-21,
+           [-20; -18; -17; -15; -12; -11; -6; -3; -2; 19; 16; 14; -13; 10; 9; -8; -7;
+            5; -4; 1]))
+
+
+        (pour le bien de cet exemple, la sortie de la fonction simplifie a été
+        remis a l'endroit afin d'avoir un affichage plus lisible)
+
+        En effet, ces deux fonctions sont des solveurs SAT, mais ont un comportement
+        différent: solveur_split parcours TOUTES les branches de l'arbre des
+        possibilités afin de trouver une interpretation valide, tandis que
+        solveur_dpll_rec "coupe" des branches de l'arbre en simplifiant des
+        cas faciles a traiter. Par conséquent, le parcours dans l'arbre réalisé
+        par ces deux fonctions est différent.
+
+        Et bien évidemment, solveur_dpll_rec est infiniment plus rapide que
+        solveur_split. Pour tester, nous avons lancé les deux fonctions sur
+        ii8a2.cnf et chronometré l'execution.
+        solveur_dpll_rec résoud le problème en 0,429s. Pour ce qui
+        est de solveur_split... nous avons interrompu le processus après 12
+        minutes pour ne pas perdre trop de temps.
 
 ---
 
