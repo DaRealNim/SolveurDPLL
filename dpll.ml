@@ -105,8 +105,8 @@ let rec solveur_split clauses interpretation =
   | _    -> branche
 
   (* tests *)
-  (* let () = print_modele (solveur_split systeme []) *)
-  (* let () = print_modele (solveur_split coloriage []) *)
+  (*let () = print_modele (solveur_split systeme [])*)
+  (*let () = print_modele (solveur_split coloriage [])*)
 
   (* solveur dpll récursif *)
 
@@ -182,4 +182,4 @@ let rec solveur_dpll_rec clauses interpretation =
 
 let () =
     let clauses = Dimacs.parse Sys.argv.(1) in
-    print_modele (solveur_dpll_rec clauses [])
+    print_modele (solveur_dpll_rec clauses []);
