@@ -87,18 +87,6 @@ in
 ;;
 
 
-(* let rec filter ret clause =
-    match clause with
-    | [] -> ret
-    | lit :: tail ->
-            if lit = i then
-                []
-                else if lit = (i * -1) then
-                    filter ret tail
-      else
-          filter (lit::ret) tail
-    in
-        List.map (filter []);; works but gives out empty clauses, shit. *)
 
 (* solveur_split : int list list -> int list -> int list option
    exemple d'utilisation de `simplifie' *)
@@ -145,43 +133,6 @@ let rec unitaire clauses =
     - si `clauses' contient au moins un littéral pur, retourne
       ce littéral ;
     - sinon, lève une exception `Failure "pas de littéral pur"' *)
-(* let pur_stupid clauses =
-    let rec aux remaining =
-        (*tests if a specific clause contains a pure litteral*)
-        let rec checkClause clause =
-            (*for each litteral in the clause*)
-            match clause with
-                (*if no litteral left, then no pure. return nothing*)
-                | [] -> None
-                (*go through all the clauses of the formula again.
-                  build a list containing either "None" if the clause DOESN'T contain
-                  the opposite of the litteral we're testing (so it could be pure)
-                  or the faulting litteral if it exists
-                  so if we're testing litteral 3 in formula [[1; 2; 3]; [2; 3]; [-3; 4; 5]]
-                  we would get [None; None; -3]
-                  all we have to do next is check if the list is full of None. If one of the
-                  element isn't None, then it isn't pure, and we test the next litteral.
-                  If all the elements are None, then the litteral is pure, return it.
-              *)
-                | y::ys -> let res = List.map (List.find_opt (fun x -> x = -y)) clauses
-                    in let found = List.find_opt (fun x -> x != None) res
-                    in if found != None then (checkClause ys) else (Some y)
-        in
-        (*for each remaining clauses*)
-        match remaining with
-        | [] -> raise(No_pure_lit "Pas de littéral pur")
-        (*call checkclause on the clause*)
-        | x::xs -> match (checkClause x) with
-            (*if checkclause returns nothing then no pure litteral was found in this clause,
-            so we continue with the next one*)
-            | None -> (aux xs)
-            (*else, then a pure litteral was found, return it*)
-            | Some y -> y
-    in
-    aux clauses
-;; *)
-
-
 let pur clauses =
     let rec aux litterals orig =
         match litterals with
@@ -224,13 +175,7 @@ let rec solveur_dpll_rec clauses interpretation =
                             | None -> solveur_dpll_rec (simplifie (-l) clauses) ((-l)::interpretation)
                             | _    -> branche
                         with Failure _ -> None
-                        (* try *)
-        					(* let x = List.hd c in
-        					solveur_dpll_rec (simplifie x clauses) (x::interpretation) *)
-                        (* with Failure "hd" -> solveur_dpll_rec tail interpretation *)
 ;;
-
-
     (* tests *)
     (* let () = print_modele (solveur_dpll_rec systeme []) *)
     (* let () = print_modele (solveur_dpll_rec coloriage []) *)
